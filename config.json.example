@@ -1,0 +1,9 @@
+{
+    "radarr_host": "",
+    "radarr_api_key": "",
+    "sonarr_host": "",
+    "sonarr_api_key": "",
+    "lidarr_host": "",
+    "lidarr_api_key": "",
+    "path": ""
+}
