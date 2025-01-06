@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import xmltodict
 import sys
 import requests
