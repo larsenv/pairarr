@@ -1,0 +1,15 @@
+services:
+  soularr:
+    restart: unless-stopped
+    container_name: pairarr
+    hostname: pairarr
+    environment: 
+      - SCAN_RADARR=true
+      - SCAN_SONARR=true
+      - PUID=1000
+      - PGID=1000
+      - SCRIPT_INTERVAL=300
+    user: "1000:1000"
+    volumes:
+      - /path/to/config/dir:/data
+    image: larsenv/soularr:latest
