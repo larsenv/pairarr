@@ -15,8 +15,8 @@ def is_docker():
 movie = {}
 
 if is_docker():
-    config = json.load(os.path.join(os.getcwd(), "/config.json"))
-    cache_db = os.path.join(os.getcwd(), "/cache.db")
+    config = json.load(os.path.join(os.getcwd(), "/data/config.json"))
+    cache_db = os.path.join(os.getcwd(), "/data/cache.db")
 
 else:
     config = json.load(open("config.json", "r"))
