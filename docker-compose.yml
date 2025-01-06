@@ -12,4 +12,4 @@ services:
     user: "1000:1000"
     volumes:
       - /path/to/config/dir:/data
-    image: larsenv/soularr:latest
+    image: larsenv/pairarr:latest
