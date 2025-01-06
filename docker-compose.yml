@@ -1,5 +1,5 @@
 services:
-  soularr:
+  pairarr:
     restart: unless-stopped
     container_name: pairarr
     hostname: pairarr
