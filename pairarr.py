@@ -114,6 +114,9 @@ for m in movie.items():
         except:
             continue
 
+        with open(cache_db, "wb") as g:
+            g.write(pickle.dumps(cache))
+
         if (
             difflib.SequenceMatcher(
                 None,
@@ -131,9 +134,6 @@ for m in movie.items():
             print("Found match")
         else:
             continue
-
-        with open(cache_db, "wb") as g:
-            g.write(pickle.dumps(cache))
 
         for result in requests.get(
             config["lidarr_host"] + "/api/v1/search",
