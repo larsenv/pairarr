@@ -150,7 +150,7 @@ for m in movie.items():
                     }
                     result["album"]["monitored"] = True
                     result["album"]["artist"]["path"] = (
-                        config["path"]
+                        path
                         + "/"
                         + result["album"]["artist"]["artistName"]
                     )
