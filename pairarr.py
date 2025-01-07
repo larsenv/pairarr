@@ -151,7 +151,7 @@ for m in movie.items():
                     }
                     result["album"]["monitored"] = True
                     result["album"]["artist"]["path"] = (
-                        "/media/sdc1/hydrobleach/Media/Music"
+                        config["path"]
                         + "/"
                         + result["album"]["artist"]["artistName"]
                     )
