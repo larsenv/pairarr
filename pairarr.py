@@ -48,14 +48,13 @@ path = config["path"]
 if path[-1] == "/":
     path = path[:-1]
 
-i = 0
-
 if os.path.exists(cache_db):
     cache = pickle.load(open(cache_db, "rb"))
 else:
     cache = {"radarr": [], "sonarr": []}
 
 for m in movie.items():
+    i = 0
     for f in m[1]:
         f = f["title"]
         if m[0] == "radarr":
