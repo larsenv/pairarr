@@ -117,7 +117,8 @@ for m in movie.items():
                     + f
                     + " "
                     + "AND type:soundtrack"
-                    + "&limit=1&offset=0"
+                    + "&limit=1&offset=0",
+                    headers={"User-Agent": "pairarr"},
                 ).content
             )
 
