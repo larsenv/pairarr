@@ -13,14 +13,18 @@ def is_docker():
 
 
 def is_latest():
-    if not os.path.exists("version.txt"):
-        with open("version.txt", "w") as f:
+    if is_docker():
+        version = "/data/version.txt"
+    else:
+        version = "version.txt"
+    if not os.path.exists(version):
+        with open(version, "w") as f:
             f.write("1")
         return False
     else:
-        with open("version.txt", "r") as f:
+        with open(version, "r") as f:
             if f.read() != "1":
-                with open("version.txt", "w") as f:
+                with open(version, "w") as f:
                     f.write("1")
                 return False
             else:
