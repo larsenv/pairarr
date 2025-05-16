@@ -14,7 +14,7 @@ def is_docker():
 
 def is_latest():
     if is_docker():
-        version = "/data/version.txt"
+        version = os.path.join(os.getcwd(), "/data/version.txt")
     else:
         version = "version.txt"
     if not os.path.exists(version):
