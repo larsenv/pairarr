@@ -12,15 +12,36 @@ def is_docker():
     return os.getenv("IN_DOCKER") is not None
 
 
+def is_latest():
+    if not os.path.exists("version.txt"):
+        with open("version.txt", "w") as f:
+            f.write("1")
+        return False
+    else:
+        with open("version.txt", "r") as f:
+            if f.read() != "1":
+                with open("version.txt", "w") as f:
+                    f.write("1")
+                return False
+            else:
+                return True
+
+
 movie = {}
 
 if is_docker():
     config = json.load(open(os.path.join(os.getcwd(), "/data/config.json")))
     cache_db = os.path.join(os.getcwd(), "/data/cache.db")
 
+    if not is_latest():
+        os.remove(cache_db)
+
 else:
     config = json.load(open("config.json", "r"))
     cache_db = "cache.db"
+
+    if not is_latest():
+        os.remove(cache_db)
 
     if (
         len(sys.argv) != 2
@@ -91,7 +112,7 @@ for m in movie.items():
                     "https://musicbrainz.org/ws/2/release?query="
                     + f
                     + " "
-                    + "soundtrack"
+                    + "AND type:soundtrack"
                     + "&limit=1&offset=0"
                 ).content
             )
@@ -100,17 +121,6 @@ for m in movie.items():
             album_id = search["metadata"]["release-list"]["release"]["release-group"][
                 "@id"
             ]
-        except:
-            continue
-
-        try:
-            if (
-                search["metadata"]["release-list"]["release"]["release-group"][
-                    "@type"
-                ].lower()
-                != "soundtrack"
-            ):
-                continue
         except:
             continue
 
@@ -150,9 +160,7 @@ for m in movie.items():
                     }
                     result["album"]["monitored"] = True
                     result["album"]["artist"]["path"] = (
-                        path
-                        + "/"
-                        + result["album"]["artist"]["artistName"]
+                        path + "/" + result["album"]["artist"]["artistName"]
                     )
                     result["album"]["artist"]["qualityProfileId"] = 1
                     result["album"]["artist"]["metadataProfileId"] = 2
