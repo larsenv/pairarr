@@ -266,14 +266,14 @@ def main():
 
     movies = {}
     if should_scan("radarr"):
-        print(color("▶ Querying Radarr...\n", "cyan"))
+        print(color("▶ Querying Radarr\n", "cyan"))
         movies["radarr"] = requests.get(
             f"{config['radarr_host'].rstrip('/')}/api/v3/movie",
             headers={"X-Api-Key": config["radarr_api_key"]},
         ).json()
 
     if should_scan("sonarr"):
-        print(color("▶ Querying Sonarr...\n", "cyan"))
+        print(color("▶ Querying Sonarr\n", "cyan"))
         movies["sonarr"] = requests.get(
             f"{config['sonarr_host'].rstrip('/')}/api/v3/series",
             headers={"X-Api-Key": config["sonarr_api_key"]},
