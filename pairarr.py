@@ -57,13 +57,21 @@ else:
 
 if len(sys.argv) > 1 and sys.argv[1] == "radarr" or os.getenv("SCAN_RADARR") == "true":
     movie["radarr"] = requests.get(
-        config["radarr_host"] + "/api/v3/movie",
+        (
+            config["radarr_host"]
+            + ("/" if config["radarr_host"][-1] != "/" else "")
+            + "api/v3/movie"
+        ),
         headers={"X-Api-Key": config["radarr_api_key"]},
     ).json()
 
 if len(sys.argv) > 1 and sys.argv[1] == "sonarr" or os.getenv("SCAN_SONARR") == "true":
     movie["sonarr"] = requests.get(
-        config["sonarr_host"] + "/api/v3/series",
+        (
+            config["sonarr_host"]
+            + ("/" if config["sonarr_host"][-1] != "/" else "")
+            + "api/v3/series"
+        ),
         headers={"X-Api-Key": config["sonarr_api_key"]},
     ).json()
 
@@ -151,7 +159,11 @@ for m in movie.items():
             continue
 
         for result in requests.get(
-            config["lidarr_host"] + "/api/v1/search",
+            (
+                config["lidarr_host"]
+                + ("/" if config["lidarr_host"][-1] != "/" else "")
+                + "api/v1/search"
+            ),
             headers={"X-Api-Key": config["lidarr_api_key"]},
             params={"term": title},
         ).json():
