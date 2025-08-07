@@ -22,7 +22,7 @@ def color(text, style):
 
 
 def version():
-    print(color("Pairarr by Larsenv\n", "cyan"))
+    print(color("pairarr by larsenv\n", "cyan"))
 
 
 def is_docker():
