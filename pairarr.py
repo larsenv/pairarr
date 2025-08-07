@@ -44,7 +44,7 @@ else:
     config = json.load(open("config.json", "r"))
     cache_db = "cache.db"
 
-    if not is_latest():
+    if os.path.exists(cache_db) and not is_latest():
         os.remove(cache_db)
 
     if (
