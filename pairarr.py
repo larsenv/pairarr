@@ -82,9 +82,8 @@ def search_musicbrainz(title):
             f"https://musicbrainz.org/ws/2/release-group?query={title} AND type:soundtrack&limit=25",
             headers={"User-Agent": "pairarr"},
         ).content
-        data = xmltodict.parse(response)
 
-        print(data)
+        data = xmltodict.parse(response)
 
         release_groups = (
             data.get("metadata", {})
