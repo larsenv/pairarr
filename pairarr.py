@@ -1,3 +1,4 @@
+import time
 import xmltodict
 import sys
 import requests
@@ -39,12 +40,12 @@ def is_latest():
     version = get_version_file()
     if not os.path.exists(version):
         with open(version, "w") as f:
-            f.write("1.1")
+            f.write("1.3")
         return False
     with open(version, "r") as f:
-        if f.read() != "1.1":
+        if f.read() != "1.3":
             with open(version, "w") as f:
-                f.write("1.1")
+                f.write("1.3")
             return False
     return True
 
@@ -82,9 +83,15 @@ def search_musicbrainz(title):
             f"https://musicbrainz.org/ws/2/release-group?query={title} AND type:soundtrack&limit=25",
             headers={"User-Agent": "pairarr"},
         ).content
-
-        data = xmltodict.parse(response)
-
+        try:
+            data = xmltodict.parse(response)
+        except:
+            time.sleep(5)
+            response = requests.get(
+                f"https://musicbrainz.org/ws/2/release-group?query={title} AND type:soundtrack&limit=25",
+                headers={"User-Agent": "pairarr"},
+             ).content
+            data = xmltodict.parse(response)
         release_groups = (
             data.get("metadata", {})
             .get("release-group-list", {})
@@ -133,10 +140,10 @@ def search_musicbrainz(title):
                 )
                 matches.append(
                     {
+                        "albumid": release.get("@id"),
                         "artist": artist_name,
-                        "album_id": release.get("@id"),
-                        "sound_title": rg_title,
                         "title": rg_title,
+                        "sound_title": rg_title,
                     }
                 )
 
@@ -156,14 +163,14 @@ def process_items(config, movies, cache, cache_path):
     for service, entries in movies.items():
         for entry in entries:
             title = entry["title"]
-            if title in cache[service]:
+            if title in cache[service].keys():
                 continue
-
             print(
                 f"{color('▶ Processing', 'cyan')} {color(str(i+1), 'yellow')}/{color(str(len(entries)), 'yellow')} "
                 f"{color(f'({service.capitalize()})', 'blue')} - {color(title, 'bold')}"
             )
-            cache[service].append(title)
+            if title not in cache[service].keys():
+                cache[service][title] = []
             i += 1
 
             mb_matches = search_musicbrainz(title)
@@ -174,24 +181,21 @@ def process_items(config, movies, cache, cache_path):
                 lidarr_results = requests.get(
                     f"{config['lidarr_host'].rstrip('/')}/api/v1/search",
                     headers={"X-Api-Key": config["lidarr_api_key"]},
-                    params={"term": mb_data["title"]},
+                    params={"term": "lidarr:" + mb_data["albumid"]},
                 ).json()
 
                 for result in lidarr_results:
-
                     if "album" not in result:
                         continue
                     album = result["album"]
-                    if album.get("foreignAlbumId") != mb_data["album_id"]:
+                    if album.get("foreignAlbumId") != mb_data["albumid"]:
                         continue
-
+                    cache[service][title].append(album["artist"]["artistName"] + album["title"])
                     artist = album["artist"]
-
                     print(
                         color("  ▶ Adding ", "blue")
-                        + color(f"{artist['artistName']} - {album['title']}", "bold")
+                        + color(f"{album['artist']['artistName']} - {album['title']}", "bold")
                     )
-
                     artist.update(
                         {
                             "path": f"{path}/{artist['artistName']}",
@@ -209,6 +213,7 @@ def process_items(config, movies, cache, cache_path):
                     )
                     album.update(
                         {
+                            "artist": artist,
                             "addOptions": {
                                 "searchForNewAlbum": True,
                                 "monitor": "all",
@@ -250,7 +255,7 @@ def main():
 
     config = load_config()
     cache_path = get_cache_path()
-    cache = {"radarr": [], "sonarr": []}
+    cache = {"radarr": {}, "sonarr": {}}
 
     if os.path.exists(cache_path) and not is_latest():
         os.remove(cache_path)
